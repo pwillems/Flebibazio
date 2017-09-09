@@ -128,12 +128,12 @@ public class PlayingField : MonoBehaviour {
                         Debug.Log("Same icon to the RIGHT Detected!");
 
                         bool check = true;
-                        int whileLoop = 1;
+                        int whileLoop = 0;
 
                         while(check)
                         {
                             Debug.Log("Next position: " + tempPositionX + whileLoop + " " + tempPositionY);
-                            Debug.Log(tempPositionX + whileLoop < fieldWidth);
+                            Debug.Log((tempPositionX + whileLoop < fieldWidth) + " " + (tempPositionX + whileLoop));
 
                             // Check if the right is the same or empty
                             if (tempPositionX+whileLoop < fieldWidth && (tempPositionX + whileLoop == 1 || tempPositionX + whileLoop == 0))
