@@ -114,6 +114,8 @@ public class PlayingField : MonoBehaviour {
                 int tempPositionX = Mathf.RoundToInt(hit.collider.gameObject.transform.position.x / 0.55f);
                 int tempPositionY = Mathf.RoundToInt(hit.collider.gameObject.transform.position.y / 0.55f);
 
+                Debug.Log("Position: " + tempPositionX + " " + tempPositionY + " Clicked");
+
                 // Now change the matrix depending on the placed shape
                 if ((turn % 2) == 0)
                 {
@@ -128,11 +130,15 @@ public class PlayingField : MonoBehaviour {
                         bool check = true;
                         int whileLoop = 1;
 
-                        while(check == true)
+                        while(check)
                         {
+                            Debug.Log("Next position: " + tempPositionX + whileLoop + " " + tempPositionY);
+                            Debug.Log(tempPositionX + whileLoop < fieldWidth);
+
                             // Check if the right is the same or empty
-                            if(tempPositionX+whileLoop < fieldWidth && (tempPositionX + whileLoop == 1 || tempPositionX + whileLoop == 0))
+                            if (tempPositionX+whileLoop < fieldWidth && (tempPositionX + whileLoop == 1 || tempPositionX + whileLoop == 0))
                             {
+                                Debug.Log("Right is good");
                                 matrix[tempPositionX+whileLoop, tempPositionY] = 1;
                             }
                             else
@@ -143,7 +149,10 @@ public class PlayingField : MonoBehaviour {
                                 }
                                 check = false;
                             }
+                            whileLoop++;
                         }
+
+                        whileLoop = 0;
                     }
                 }
                 else
