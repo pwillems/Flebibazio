@@ -117,10 +117,12 @@ public class PlayingField : MonoBehaviour {
                         bool check = true;
                         int whileLoop = 0;
 
+                        // Deze gaat FOUT
                         while(check)
                         {
-                            Debug.Log("Next position: " + tempPositionX + whileLoop + " " + tempPositionY);
-                            Debug.Log("Is the next figure within field: " + (tempPositionX + whileLoop < fieldWidth) + " & what is the next x position: " + (tempPositionX + whileLoop));
+
+                            //Debug.Log("Next position: " + tempPositionX + whileLoop + " " + tempPositionY);
+                            Debug.Log("Is the next figure within field: " + (tempPositionX + whileLoop < fieldWidth) + " & whileLoop: " + whileLoop);
                             Debug.Log("Full if loop: " + ((tempPositionX + whileLoop < fieldWidth) && (tempPositionX + whileLoop == 1 || tempPositionX + whileLoop == 0)));
 
                             // Check if the right is the same or empty
@@ -131,10 +133,11 @@ public class PlayingField : MonoBehaviour {
                             }
                             else
                             {
+                                // Check if it has stopped because of end of the field or other shape
                                 if(tempPositionX + whileLoop < fieldWidth)
                                 {
-                                    Debug.Log("Next is wrong shape, change it: " + (tempPositionX+whileLoop) + " " + tempPositionY);
-                                    matrix[tempPositionX+whileLoop, tempPositionY] = 1;
+                                    Debug.Log("Next is wrong shape, change it: " + (tempPositionX+whileLoop+1) + " " + tempPositionY);
+                                    matrix[tempPositionX+whileLoop+1, tempPositionY] = 1;
                                 }
                                 check = false;
                             }
