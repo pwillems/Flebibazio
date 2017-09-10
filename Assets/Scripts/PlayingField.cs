@@ -29,7 +29,7 @@ public class PlayingField : MonoBehaviour {
         score = 0.0f;
 
 		// Fill the playing field and draw the shapes
-		fillMatrix ();
+		FillMatrix ();
     }
 
     // Update is called once per frame
@@ -42,10 +42,10 @@ public class PlayingField : MonoBehaviour {
             CastRay();
         }
         // Draw the shapes (update them if needed)
-		updateShapes();
+		UpdateShapes();
     }
 
-	void fillMatrix() {
+	void FillMatrix() {
 
 		// Generate the matrix and the shapes in the playingfield
 		for (int x = 0; x < fieldWidth; x++)
@@ -106,51 +106,15 @@ public class PlayingField : MonoBehaviour {
                 // Now change the matrix depending on the placed shape
                 if ((turn % 2) == 0)
                 {
-                    // For shape 1
+                    // Place the new shape and fill the rows and columns accordingly
                     matrix[tempPositionX, tempPositionY] = 1;
-
-                    // Check to the right
-                    if(tempPositionX < fieldWidth && matrix[tempPositionX+1, tempPositionY] == 1)
-                    {
-                        Debug.Log("Same icon to the RIGHT Detected!");
-
-                        bool check = true;
-                        int whileLoop = 0;
-
-                        // Deze gaat FOUT
-                        while(check)
-                        {
-
-                            //Debug.Log("Next position: " + tempPositionX + whileLoop + " " + tempPositionY);
-                            Debug.Log("Is the next figure within field: " + (tempPositionX + whileLoop < fieldWidth) + " & whileLoop: " + whileLoop);
-                            Debug.Log("Full if loop: " + ((tempPositionX + whileLoop < fieldWidth) && (tempPositionX + whileLoop == 1 || tempPositionX + whileLoop == 0)));
-
-                            // Check if the right is the same or empty
-                            if ((tempPositionX+whileLoop < fieldWidth) && (tempPositionX + whileLoop == 1 || tempPositionX + whileLoop == 0))
-                            {
-                                Debug.Log("Right is good");
-                                matrix[tempPositionX+whileLoop, tempPositionY] = 1;
-                            }
-                            else
-                            {
-                                // Check if it has stopped because of end of the field or other shape
-                                if(tempPositionX + whileLoop < fieldWidth)
-                                {
-                                    Debug.Log("Next is wrong shape, change it: " + (tempPositionX+whileLoop+1) + " " + tempPositionY);
-                                    matrix[tempPositionX+whileLoop+1, tempPositionY] = 1;
-                                }
-                                check = false;
-                            }
-                            whileLoop++;
-                        }
-
-                        whileLoop = 0;
-                    }
+                    CheckSides(tempPositionX, tempPositionY, 1);
                 }
                 else
                 {
-                    // For shape 2
+                    // Place the new shape and fill the rows and columns accordingly
                     matrix[tempPositionX, tempPositionY] = 2;
+                    CheckSides(tempPositionX, tempPositionY, 2);
                 }
 
                 turn = turn + 1;
@@ -159,7 +123,7 @@ public class PlayingField : MonoBehaviour {
         }
     }
 
-	void updateShapes() {
+	void UpdateShapes() {
 		
 		// Update the shapes according to changes in the matrix
 		for (int x = 0; x < fieldWidth; x++)
@@ -182,5 +146,157 @@ public class PlayingField : MonoBehaviour {
 		}
 
 	}
+
+    void CheckSides(int xInput, int yInput, int shapeCheck)
+    {
+        CheckRight(xInput, yInput, shapeCheck);
+        CheckLeft(xInput, yInput, shapeCheck);
+        CheckTop(xInput, yInput, shapeCheck);
+        CheckBottom(xInput, yInput, shapeCheck);
+    }
+
+    void CheckRight(int xInput, int yInput, int shapeCheck)
+    {
+        // Check to the right
+        if (xInput + 1 < fieldWidth && matrix[(xInput + 1), yInput] == shapeCheck)
+        {
+            // Same shape to the right detected
+            bool check = true;
+            int whileLoop = 1;
+
+            while (check)
+            {
+                // Maak temp variables that correspond with the place in the matrix
+                int x = xInput + whileLoop;
+                int y = yInput;
+
+                // Check if the right is the same or empty
+                if ((x < fieldWidth) && (matrix[x, y] == shapeCheck || matrix[x, y] == 0))
+                {
+                    matrix[x, y] = shapeCheck;
+                }
+                else
+                {
+                    // Check if it has stopped because of end of the field or other shape
+                    if (x < fieldWidth)
+                    {
+                        matrix[x, y] = shapeCheck;
+                    }
+                    check = false;
+                }
+                whileLoop++;
+            }
+            whileLoop = 0;
+        }
+        // Done checking to the right
+    }
+
+    void CheckLeft(int xInput, int yInput, int shapeCheck)
+    {
+        // Check to the left
+        if (xInput - 1 >= 0 && matrix[(xInput - 1), yInput] == shapeCheck)
+        {
+            // Same shape to the left detected
+            bool check = true;
+            int whileLoop = 1;
+
+            while (check)
+            {
+                // Maak temp variables that correspond with the place in the matrix
+                int x = xInput - whileLoop;
+                int y = yInput;
+
+                // Check if the right is the same or empty
+                if ((x >= 0) && (matrix[x, y] == shapeCheck || matrix[x, y] == 0))
+                {
+                    matrix[x, y] = shapeCheck;
+                }
+                else
+                {
+                    // Check if it has stopped because of end of the field or other shape
+                    if (x < fieldWidth)
+                    {
+                        matrix[x, y] = shapeCheck;
+                    }
+                    check = false;
+                }
+                whileLoop++;
+            }
+            whileLoop = 0;
+        }
+        // Done checking to the left
+    }
+
+    void CheckTop(int xInput, int yInput, int shapeCheck)
+    {
+        // Check to the top
+        if (yInput + 1 < fieldWidth && matrix[(xInput), yInput + 1] == shapeCheck)
+        {
+            // Same shape to the top detected
+            bool check = true;
+            int whileLoop = 1;
+
+            while (check)
+            {
+                // Maak temp variables that correspond with the place in the matrix
+                int x = xInput;
+                int y = yInput + whileLoop;
+
+                // Check if the right is the same or empty
+                if ((y < fieldWidth) && (matrix[x, y] == shapeCheck || matrix[x, y] == 0))
+                {
+                    matrix[x, y] = shapeCheck;
+                }
+                else
+                {
+                    // Check if it has stopped because of end of the field or other shape
+                    if (y < fieldWidth)
+                    {
+                        matrix[x, y] = shapeCheck;
+                    }
+                    check = false;
+                }
+                whileLoop++;
+            }
+            whileLoop = 0;
+        }
+        // Done checking to the top
+    }
+
+    void CheckBottom(int xInput, int yInput, int shapeCheck)
+    {
+        // Check to the bottom
+        if (yInput - 1 >= 0 && matrix[(xInput), yInput + 1] == shapeCheck)
+        {
+            // Same shape to the bottom detected
+            bool check = true;
+            int whileLoop = 1;
+
+            while (check)
+            {
+                // Maak temp variables that correspond with the place in the matrix
+                int x = xInput;
+                int y = yInput - whileLoop;
+
+                // Check if the right is the same or empty
+                if ((y >= 0) && (matrix[x, y] == shapeCheck || matrix[x, y] == 0))
+                {
+                    matrix[x, y] = shapeCheck;
+                }
+                else
+                {
+                    // Check if it has stopped because of end of the field or other shape
+                    if (y < fieldWidth)
+                    {
+                        matrix[x, y] = shapeCheck;
+                    }
+                    check = false;
+                }
+                whileLoop++;
+            }
+            whileLoop = 0;
+        }
+        // Done checking to the bottom
+    }
 
 }
