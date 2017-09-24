@@ -43,6 +43,9 @@ public class PlayingField : MonoBehaviour {
         }
         // Draw the shapes (update them if needed)
 		UpdateShapes();
+
+		// Now check if there is a row or column complete
+		CompleteRow();
     }
 
 	void FillMatrix() {
@@ -149,6 +152,7 @@ public class PlayingField : MonoBehaviour {
 
     void CheckSides(int xInput, int yInput, int shapeCheck)
     {
+		// Check in each direction
         CheckRight(xInput, yInput, shapeCheck);
         CheckLeft(xInput, yInput, shapeCheck);
         CheckTop(xInput, yInput, shapeCheck);
@@ -299,4 +303,41 @@ public class PlayingField : MonoBehaviour {
         // Done checking to the bottom
     }
 
+	void CompleteRow()
+	{
+		// Now first check if there is a complete column 
+		for (int x = 1; x < fieldWidth; x++) {
+			int count = 0;
+			int tempValue = 0;
+			for (int y = 0; y < fieldHeight; y++) {
+				if (matrix [x, y] != 0) {
+					if (y == 0) {
+						tempValue = matrix [x, y];
+					} else {
+						if (y != tempValue) {
+
+						} else {
+							count++;
+						}
+					}
+				}
+			}
+			if (count == fieldHeight-1) {
+				// Row is completely the same, now remove it! 
+				Debug.Log("DELETE THE ROW");
+			}
+			else if(count == fieldHeight-2)
+			{
+				Debug.Log("CMON, GO HERE");
+			}
+		}
+
+		// Now check if there is a complete row
+		for (int y = 0; y < fieldHeight; y++) {
+			for (int x = 0; x < fieldWidth; x++) {
+				
+			}
+		}
+
+	}
 }
