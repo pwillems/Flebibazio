@@ -40,12 +40,12 @@ public class PlayingField : MonoBehaviour {
         {
             // Debug.Log("Pressed left click, casting ray.");
             CastRay();
+
+			// Now check if there is a row or column complete
+			CompleteRow();
         }
         // Draw the shapes (update them if needed)
 		UpdateShapes();
-
-		// Now check if there is a row or column complete
-		CompleteRow();
     }
 
 	void FillMatrix() {
@@ -206,12 +206,12 @@ public class PlayingField : MonoBehaviour {
 
             while (check)
             {
-                // Maak temp variables that correspond with the place in the matrix
+                // Make temp variables that corresponds with the place in the matrix
                 int x = xInput - whileLoop;
                 int y = yInput;
 
-                // Check if the right is the same or empty
-                if ((x >= 0) && (matrix[x, y] == shapeCheck || matrix[x, y] == 0))
+                // Check if the left is the same or empty
+                if ((x > 0) && (matrix[x, y] == shapeCheck || matrix[x, y] == 0))
                 {
                     matrix[x, y] = shapeCheck;
                 }
@@ -246,7 +246,7 @@ public class PlayingField : MonoBehaviour {
                 int x = xInput;
                 int y = yInput + whileLoop;
 
-                // Check if the right is the same or empty
+                // Check if the top is the same or empty
                 if ((y < fieldWidth) && (matrix[x, y] == shapeCheck || matrix[x, y] == 0))
                 {
                     matrix[x, y] = shapeCheck;
@@ -270,7 +270,7 @@ public class PlayingField : MonoBehaviour {
     void CheckBottom(int xInput, int yInput, int shapeCheck)
     {
         // Check to the bottom
-        if (yInput - 1 >= 0 && matrix[(xInput), yInput + 1] == shapeCheck)
+        if (yInput - 1 >= 0 && matrix[(xInput), yInput - 1] == shapeCheck)
         {
             // Same shape to the bottom detected
             bool check = true;
@@ -282,8 +282,8 @@ public class PlayingField : MonoBehaviour {
                 int x = xInput;
                 int y = yInput - whileLoop;
 
-                // Check if the right is the same or empty
-                if ((y >= 0) && (matrix[x, y] == shapeCheck || matrix[x, y] == 0))
+                // Check if the bottom is the same or empty
+                if ((y > 0) && (matrix[x, y] == shapeCheck || matrix[x, y] == 0))
                 {
                     matrix[x, y] = shapeCheck;
                 }
@@ -305,39 +305,119 @@ public class PlayingField : MonoBehaviour {
 
 	void CompleteRow()
 	{
-		// Now first check if there is a complete column 
-		for (int x = 1; x < fieldWidth; x++) {
+		
+		// Go through the horizontal lines of the matrix and check for completed columns
+		for (int x = 0; x < fieldWidth; x++) {
+
+			// Variables to count the number of same value cells
 			int count = 0;
 			int tempValue = 0;
+	
+			// Go through each cells of this horizontal line
 			for (int y = 0; y < fieldHeight; y++) {
+				
+				// Check each cells if it not matches 0 and if it matches the previous cell
 				if (matrix [x, y] != 0) {
+					
+					// Set the tempValue equal to the first cell
 					if (y == 0) {
 						tempValue = matrix [x, y];
-					} else {
-						if (y != tempValue) {
-
+					} 
+					else {
+						if (matrix [x,y] != tempValue) {
+							// Cells are different, stop the for loop
+							y = fieldHeight;
 						} else {
+							// Cell is the same as the previous one, continue counting
 							count++;
 						}
 					}
 				}
 			}
+
+			// Done checking the whole column, now verify is the row is full. 
 			if (count == fieldHeight-1) {
-				// Row is completely the same, now remove it! 
-				Debug.Log("DELETE THE ROW");
-			}
-			else if(count == fieldHeight-2)
-			{
-				Debug.Log("CMON, GO HERE");
+				// Okay, now delete the column and moves each column
+				deleteColumn (x);
 			}
 		}
 
 		// Now check if there is a complete row
 		for (int y = 0; y < fieldHeight; y++) {
+
+			// Variables to count the number of same value cells
+			int count = 0;
+			int tempValue = 0;
+
 			for (int x = 0; x < fieldWidth; x++) {
-				
+
+				// Check each cells if it not matches 0 and if it matches the previous cell
+				if (matrix [x, y] != 0) {
+
+					// Set the tempValue equal to the first cell
+					if (x == 0) {
+						tempValue = matrix [x, y];
+					} 
+					else {
+						if (matrix [x,y] != tempValue) {
+							// Cells are different, stop the for loop
+							x = fieldHeight;
+						} else {
+							// Cell is the same as the previous one, continue counting
+							count++;
+						}
+					}
+				}
+
+				// Done checking the whole column, now verify is the row is full. 
+				if (count == fieldHeight-1) {
+					deleteRow (y);
+				}
+
 			}
 		}
 
+	}
+
+	void deleteRow(int y){
+
+		// Delete the row and spawn a new one
+		Debug.Log("DELETE THE ROW");
+
+	}
+
+	void deleteColumn(int x){
+
+		// Delete the column and spawn a new one
+		Debug.Log("DELETE THE COLUMN");
+
+		for (int tempX = x; x < fieldWidth; x++) {
+
+			if (tempX == fieldWidth - 1) {
+				// This is the last row, this should be random
+				for (int y = 0; y < fieldHeight; y++) {
+
+					// Fill the column with random generated shapes
+					int tempRandom = Random.Range (0, 100);
+
+					if (tempRandom < 50) {
+						matrix [tempX, y] = 0;
+					} else if (tempRandom >= 50 && tempRandom < 75) {
+						matrix [tempX, y] = 1;
+					} else {
+						matrix [tempX, y] = 2;
+					}
+
+					Debug.Log(matrix[tempX, y]);
+				}
+			} 
+			else 
+			{
+				// place the value of the next cell in the current one
+				for (int y = 0; y < fieldHeight; y++) {
+					matrix [tempX, y] = matrix [tempX + 1, y];
+				}
+			}
+		}
 	}
 }
