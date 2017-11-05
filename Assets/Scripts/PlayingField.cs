@@ -19,6 +19,7 @@ public class PlayingField : MonoBehaviour {
     float score;
 
     public int[,] matrix = new int[fieldHeight, fieldWidth];
+	public int[,] tempMatrix = new int[fieldHeight, fieldWidth];
     GameObject[,] playingField = new GameObject[fieldHeight, fieldWidth];
 
     // Use this for initialization
@@ -30,6 +31,8 @@ public class PlayingField : MonoBehaviour {
 
 		// Fill the playing field and draw the shapes
 		FillMatrix ();
+
+		tempMatrix = matrix;
     }
 
     // Update is called once per frame
@@ -104,8 +107,6 @@ public class PlayingField : MonoBehaviour {
                 int tempPositionX = Mathf.RoundToInt(hit.collider.gameObject.transform.position.x / 0.55f);
                 int tempPositionY = Mathf.RoundToInt(hit.collider.gameObject.transform.position.y / 0.55f);
 
-                // Debug.Log("Position: " + tempPositionX + " " + tempPositionY + " Clicked");
-
                 // Now change the matrix depending on the placed shape
                 if ((turn % 2) == 0)
                 {
@@ -133,6 +134,11 @@ public class PlayingField : MonoBehaviour {
 		{
 			for (int y = 0; y < fieldHeight; y++)
 			{
+				// Check if the shape has changed, if it has, then play animation before displaying
+				if (matrix [x, y] != tempMatrix [x, y]) {
+					// So shape has changed, animate it! :) 
+				}
+
 				switch (matrix[x, y])
 				{
 				case 0:
@@ -384,6 +390,33 @@ public class PlayingField : MonoBehaviour {
 		// Delete the row and spawn a new one
 		Debug.Log("DELETE THE ROW");
 
+		for (int tempY = y; tempY < fieldHeight; tempY++) {
+
+			if (tempY == fieldWidth - 1) {
+				// This is the last row, this should be random
+				for (int x = 0; x < fieldWidth; x++) {
+					
+					// Fill the column with random generated shapes
+					int tempRandom = Random.Range (0, 100);
+
+					if (tempRandom < 50) {
+						matrix [x, tempY] = 0;
+					} else if (tempRandom >= 50 && tempRandom < 75) {
+						matrix [x, tempY] = 1;
+					} else {
+						matrix [x, tempY] = 2;
+					}
+
+					Debug.Log (matrix [x, tempY]);
+
+				}
+			} else {
+				for (int x = 0; x < fieldWidth; x++) {
+					matrix [x, tempY] = matrix [x, tempY + 1];
+				}
+			}
+
+		}
 	}
 
 	void deleteColumn(int x){
@@ -391,7 +424,7 @@ public class PlayingField : MonoBehaviour {
 		// Delete the column and spawn a new one
 		Debug.Log("DELETE THE COLUMN");
 
-		for (int tempX = x; x < fieldWidth; x++) {
+		for (int tempX = x; tempX < fieldWidth; tempX++) {
 
 			if (tempX == fieldWidth - 1) {
 				// This is the last row, this should be random
