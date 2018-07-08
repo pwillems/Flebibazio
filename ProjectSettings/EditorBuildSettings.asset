@@ -4,10 +4,4 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes:
-  - enabled: 1
-    path: Assets/Scenes/Main Menu.unity
-    guid: 03bf0ab9f7381654ab4371db4bea28e0
-  - enabled: 1
-    path: Assets/Scenes/Infinity Mode.unity
-    guid: 824c3da75de45424998459ced4d43fc7
+  m_Scenes: []

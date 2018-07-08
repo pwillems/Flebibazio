@@ -38,18 +38,21 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Background
-    uniqueID: 2394268511
-    locked: 0
-  - name: Playingfield
-    uniqueID: 2600864879
-    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Shapes
-    uniqueID: 3278558385
+  - name: Background
+    uniqueID: 2819657491
     locked: 0
-  - name: Menu
-    uniqueID: 3822143679
+  - name: Playingfield
+    uniqueID: 1482528763
+    locked: 0
+  - name: Behind shapes
+    uniqueID: 964602669
+    locked: 0
+  - name: Shapes
+    uniqueID: 3606787689
+    locked: 0
+  - name: UI
+    uniqueID: 1036261577
     locked: 0
