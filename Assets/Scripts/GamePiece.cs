@@ -51,7 +51,7 @@ public class GamePiece : MonoBehaviour {
     public void Init(Board board)
     {
         m_board = board;
-    }
+    }//
 
     public void Move(int destX, int destY, float timeToMove)
     {

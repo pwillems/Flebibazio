@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flebibazio", "Assembly-CSharp.csproj", "{CD3D9F0B-88E2-692E-4FBC-638F2D7D359B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{CD3D9F0B-88E2-692E-4FBC-638F2D7D359B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
