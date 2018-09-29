@@ -1,15 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GamePiece : MonoBehaviour {
+public class GamePiece : MonoBehaviour, ITileAnimation
+{
 
     public int xIndex;
     public int yIndex;
     public int type;
 
     bool m_isMoving = false;
-	bool m_isFading = false;
+    bool m_isFading = false;
 
     Board m_board;
 
@@ -24,13 +26,15 @@ public class GamePiece : MonoBehaviour {
         SmootherStep
     }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    // Use this for initialization
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             Move((int)transform.position.x + 1, (int)transform.position.y, 0.5f);
@@ -41,11 +45,11 @@ public class GamePiece : MonoBehaviour {
         }
     }
 
-	public void SetCoord(int x, int y, int tempType)
+    public void SetCoord(int x, int y, int tempType)
     {
         xIndex = x;
         yIndex = y;
-		type = tempType;
+        type = tempType;
     }
 
     public void Init(Board board)
@@ -61,90 +65,134 @@ public class GamePiece : MonoBehaviour {
         }
     }
 
-	public void FadeIn(float timeToFade){
-		if (!m_isFading) {
-			StartCoroutine (FadeInRoutine (timeToFade));
-		}
-	}
+    public void FadeIn(float timeToFade)
+    {
+        if (!m_isFading)
+        {
+            StartCoroutine(FadeInRoutineTest(timeToFade));
+        }
+    }
 
-	public void FadeOut(float timeToFade){
-		//Debug.Log ("Fading " + xIndex + ", " + yIndex);
-		if (!m_isFading) {
-		// TODO: This needs a check or something
-		//Debug.Log ("Actual fading");
-		StartCoroutine (FadeOutRoutine (timeToFade));
-		}
-	}
+    public void FadeOut(float timeToFade)
+    {
+        //Debug.Log ("Fading " + xIndex + ", " + yIndex);
+        if (!m_isFading)
+        {
+            // TODO: This needs a check or something
+            //Debug.Log ("Actual fading");
+            StartCoroutine(FadeOutRoutine(timeToFade));
+        }
+    }
 
-	IEnumerator FadeInRoutine (float fadeTime){
-		// Get current spriteColor
-		Color spriteColor = this.GetComponent<SpriteRenderer> ().color;
+    IEnumerator FadeInRoutine(float fadeTime, Action callback)
+    {
+        // Get current spriteColor
+        Color spriteColor = this.GetComponent<SpriteRenderer>().color;
 
-		bool fadeComplete = false;
-		float elapsedTime = 0f;
-		float alpha = spriteColor.a;
+        bool fadeComplete = false;
+        float elapsedTime = 0f;
+        float alpha = spriteColor.a;
 
-		m_isFading = true;
+        m_isFading = true;
 
-		while (!fadeComplete) {
+        while (!fadeComplete)
+        {
 
-			if (alpha > .99f) {
-				// Fading is done
-				fadeComplete = true;
-				break;
-			}
+            if (alpha > .99f)
+            {
+                // Fading is done
+                fadeComplete = true;
+                break;
+            }
 
-			elapsedTime += Time.deltaTime;
+            elapsedTime += Time.deltaTime;
 
-			//Fade from 0 to 1
-			alpha = Mathf.Lerp(0, 1, elapsedTime / fadeTime);
+            //Fade from 0 to 1
+            alpha = Mathf.Lerp(0, 1, elapsedTime / fadeTime);
 
-			this.GetComponent<SpriteRenderer> ().color = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
+            this.GetComponent<SpriteRenderer>().color = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
 
-			yield return null;
+            yield return null;
 
-		}
-	}
+        }
+        callback();
+    }
 
-	IEnumerator FadeOutRoutine (float timeToFade)
-	{
-		// Get current spriteColor
-		Color spriteColor = this.GetComponent<SpriteRenderer> ().color;
+    IEnumerator FadeInRoutineTest(float fadeTime)
+    {
+        // Get current spriteColor
+        Color spriteColor = this.GetComponent<SpriteRenderer>().color;
 
-		bool fadeComplete = false;
-		float elapsedTime = 0f;
-		float alpha = spriteColor.a;
+        bool fadeComplete = false;
+        float elapsedTime = 0f;
+        float alpha = spriteColor.a;
 
-		//Debug.Log ("Now fading, current alpha " + alpha + " current rgb " + spriteColor.r + " " + spriteColor.g + " " + spriteColor.b);
+        m_isFading = true;
 
-		m_isFading = true;
+        while (!fadeComplete)
+        {
 
-		while (!fadeComplete) {
+            if (alpha > .99f)
+            {
+                // Fading is done
+                fadeComplete = true;
+                break;
+            }
 
-			if (alpha < 0.01f) {
-				// Fading is done
-				fadeComplete = true;
-				break;
-			}
+            elapsedTime += Time.deltaTime;
 
-			elapsedTime += Time.deltaTime;
+            //Fade from 0 to 1
+            alpha = Mathf.Lerp(0, 1, elapsedTime / fadeTime);
 
-			//Fade from 1 to 0
-			alpha = Mathf.Lerp(1, 0, elapsedTime / timeToFade);
+            this.GetComponent<SpriteRenderer>().color = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
 
-			this.GetComponent<SpriteRenderer> ().color = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
+            yield return null;
 
-			yield return null;
+        }
+    }
 
-		}
+    IEnumerator FadeOutRoutine(float timeToFade)
+    {
+        // Get current spriteColor
+        Color spriteColor = this.GetComponent<SpriteRenderer>().color;
 
-		if (fadeComplete == true) {
-			Destroy(this.gameObject);
-		}
-			
-	}
+        bool fadeComplete = false;
+        float elapsedTime = 0f;
+        float alpha = spriteColor.a;
 
-    IEnumerator MoveRoutine (Vector3 destination, float timeToMove)
+        //Debug.Log ("Now fading, current alpha " + alpha + " current rgb " + spriteColor.r + " " + spriteColor.g + " " + spriteColor.b);
+
+        m_isFading = true;
+
+        while (!fadeComplete)
+        {
+
+            if (alpha < 0.01f)
+            {
+                // Fading is done
+                fadeComplete = true;
+                break;
+            }
+
+            elapsedTime += Time.deltaTime;
+
+            //Fade from 1 to 0
+            alpha = Mathf.Lerp(1, 0, elapsedTime / timeToFade);
+
+            this.GetComponent<SpriteRenderer>().color = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
+
+            yield return null;
+
+        }
+
+        if (fadeComplete == true)
+        {
+            Destroy(this.gameObject);
+        }
+
+    }
+
+    IEnumerator MoveRoutine(Vector3 destination, float timeToMove)
     {
         Vector3 startPosition = transform.position;
 
@@ -186,7 +234,7 @@ public class GamePiece : MonoBehaviour {
                     t = t * t * t * (t * (t * 6 - 15) + 10);
                     break;
             }
-            
+
             // move the game piece
             transform.position = Vector3.Lerp(startPosition, destination, t);
 
@@ -195,5 +243,10 @@ public class GamePiece : MonoBehaviour {
         }
 
         m_isMoving = false;
+    }
+
+    public void fadeIn(float fadeTime, Action callback)
+    {
+        StartCoroutine(FadeInRoutine(fadeTime, callback));
     }
 }

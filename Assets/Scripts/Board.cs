@@ -14,6 +14,8 @@ public class Board : MonoBehaviour
 	public bool ruleCheckLeft = true;
 	public bool ruleCheckRight = true;
 
+    private AnimationQueue animationQueue;
+
 	public float swapTime = 0.5f;
 
 	public int borderSize;
@@ -37,6 +39,7 @@ public class Board : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+        animationQueue = GetComponent<AnimationQueue>();
 		m_allTiles = new Tile[width, height];
 		m_allGamePieces = new GamePiece[width, height];
 		SetupTiles ();
@@ -143,7 +146,9 @@ public class Board : MonoBehaviour
 
 		// Set the coordinates in the shape
 		gamePiece.SetCoord (x, y, shape);
-		gamePiece.FadeIn (fadeTime);
+        //TODO: WIP
+        animationQueue.addAnimation(gamePiece, fadeTime);
+        //gamePiece.FadeIn(fadeTime);
 	}
 
 	bool IsWithinBounds (int x, int y)
