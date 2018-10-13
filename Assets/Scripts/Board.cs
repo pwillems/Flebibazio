@@ -9,13 +9,12 @@ public class Board : MonoBehaviour
 	public int height;
 	public GameObject tilePrefab;
 	public int difficulty;
-    public int level;
 	public bool ruleCheckTop = true;
 	public bool ruleCheckBottom = true;
 	public bool ruleCheckLeft = true;
 	public bool ruleCheckRight = true;
-    public bool ruleRemoveRow = true;
-    public bool ruleRemoveColumn = false;
+
+    private AnimationQueue animationQueue;
 
 	public float swapTime = 0.5f;
 
@@ -40,6 +39,7 @@ public class Board : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+        animationQueue = GetComponent<AnimationQueue>();
 		m_allTiles = new Tile[width, height];
 		m_allGamePieces = new GamePiece[width, height];
 		SetupTiles ();
@@ -146,7 +146,9 @@ public class Board : MonoBehaviour
 
 		// Set the coordinates in the shape
 		gamePiece.SetCoord (x, y, shape);
-		gamePiece.FadeIn (fadeTime);
+        //TODO: WIP
+        animationQueue.addAnimation(gamePiece, fadeTime);
+        //gamePiece.FadeIn(fadeTime);
 	}
 
 	bool IsWithinBounds (int x, int y)
@@ -236,18 +238,17 @@ public class Board : MonoBehaviour
 			}
 
 			// Now check if the playingfield is full
-			IsFull();
+			isFull();
 
 			// Next turn :) 
 			turn++;
-
 		}
 
 	}
 
 	// Needs some work
-	public void IsFull(){
-		/*int fullCount = 0;
+	public void isFull(){
+		int fullCount = 0;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				fullCount++;
@@ -256,10 +257,9 @@ public class Board : MonoBehaviour
 		if (fullCount == height * width) {
 			//Debug.Log ("Game over, playing field full!");
 		}
-        */
 	}
 
-	public void CheckFullRow(){
+	public void checkFullRow(){
 		for (int y = 0; y < height; y++) {
 
 			int startShape = 325;
@@ -273,10 +273,10 @@ public class Board : MonoBehaviour
 					// Cool this is the same, now check if its the last one
 					if(x == (width-1)){
 						// We got a full row!! 
-						//Debug.Log("Full row " + y);
-						RemoveRow(y);
-						// checkSides ();
-						break;
+						Debug.Log("Full row " + y);
+						removeRow(y);
+                        // checkSides ();
+                        break;
 					}
 				} else {
 					break;
@@ -285,7 +285,7 @@ public class Board : MonoBehaviour
 		}
 	}
 
-	public void CheckFullColumn() {
+	public void checkFullColumn() {
 		for (int x = 0; x < width; x++) {
 			int startShape = 325;
 
@@ -298,19 +298,18 @@ public class Board : MonoBehaviour
 					// So at least shape 2 is the same as the startshape
 					if (y == (height - 1)) {
 						// We got a winner folks! 
-						// Debug.Log("Full column " + x);
-						RemoveColumn (x);
+						Debug.Log("Full column " + x);
+						removeColumn (x);
 					}
 				}
 			}
 		}
 	}
 
-	public void RemoveRow(int row){
+	public void removeRow(int row){
 		
 		// First delete the row and set the grid to null for this row
 		for (int x = 0; x < width; x++) {
-            Debug.Log("RR " + x + ", " + row);
 			m_allGamePieces [x, row].FadeOut (fadeTime);
 			m_allGamePieces [x, row] = null;
 		}
@@ -320,6 +319,7 @@ public class Board : MonoBehaviour
 			for (int y = row+1; y < height; y++) {
 				for (int x = 0; x < width; x++) {
 					if (m_allGamePieces [x, y] != null) {
+						// TODO: Might be going wrong here. 
 						m_allGamePieces [x, y].Move (x, (y - 1), moveTime);
 
 						// The type in the movingpiece is correct
@@ -339,12 +339,12 @@ public class Board : MonoBehaviour
 
 		// Now add a new row
 		for (int x = 0; x < width; x++) {
-			PlaceRandomPiece (x, height - 1, 1);
+			PlaceRandomPiece (x, height - 1, 0);
 		}
 
 	}
 
-	public void RemoveColumn(int column){
+	public void removeColumn(int column){
 		// First delete the column
 		for (int y = 0; y < height; y++) {
 			m_allGamePieces [column, y].FadeOut (fadeTime);
@@ -388,14 +388,7 @@ public class Board : MonoBehaviour
 			checkBottom (x, y, shape);
 		}
 
-        if (ruleRemoveRow)
-        {
-            CheckFullRow();
-        };
-        if (ruleRemoveColumn)
-        {
-            CheckFullColumn();
-        }
+		checkFullRow ();
 	}
 
 	void checkRight (int x, int y, int shape)
@@ -424,9 +417,9 @@ public class Board : MonoBehaviour
 					
 				} 
 				if (m_allGamePieces [i, y].type != shape) {
-
-                    // Wrong shape detected, change it, then step out of the loo
-                    // Fade old piece
+					
+					// Wrong shape detected, change it, then step out of the loo
+					// Fade old piece
 					GamePiece oldPiece = m_allGamePieces [i, y];
 					oldPiece.FadeOut (fadeTime);
 					m_allGamePieces [i, y] = null;
