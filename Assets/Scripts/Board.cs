@@ -23,7 +23,7 @@ public class Board : MonoBehaviour
 
 	public int turn = 0;
 
-	public float fadeTime = 0.5f;
+	public float fadeTime = 0.2f;
 	public float moveTime = 1f;
 
 	// Set 2D arrays
@@ -51,7 +51,7 @@ public class Board : MonoBehaviour
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			
+            Debug.Log(m_allGamePieces);
 			// Print the grid types for debugging, fix those errors!! 
 			for (int x = 0; x < width; x++) {
 				int[] tempRow = new int[width];
