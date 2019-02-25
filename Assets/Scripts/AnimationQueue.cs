@@ -8,10 +8,11 @@ public class AnimationQueue : MonoBehaviour {
     private List<ITileAnimation> animationList = new List<ITileAnimation>();
     private List<float> animationTimes = new List<float>();
     private List<int> tileAnimationType = new List<int>();
+    private List<Vector3> destinationList = new List<Vector3>();
     private bool canRun = true;
 
     // Types of animations:
-    // FadeIn = 1, FadeOut = 2, Move = 3
+    // Move = 0, FadeIn = 1, FadeOut = 2
 
 	// Use this for initialization
 	void Start () {
@@ -36,21 +37,36 @@ public class AnimationQueue : MonoBehaviour {
                     canRun = true;
                 });
             }
-            else if (tileAnimationType[0] == 3)
+            else if (tileAnimationType[0] == 0)
             {
                 // The animation should be a move, TODO
+                animationList[0].movePiece(destinationList[0], animationTimes[0], () => { //Dit is een callback System.Action, check de docs daar maar op.
+                    canRun = true;
+                });
             }
             animationList.RemoveAt(0);
             animationTimes.RemoveAt(0);
             tileAnimationType.RemoveAt(0);
+            destinationList.RemoveAt(0);
         }
     }
 
-    public void addAnimation(ITileAnimation tileAnimation, float fadeTime, int animationType)
+    // Add a fade animation to the queue
+    public void addFadeAnimation(ITileAnimation tileAnimation, float fadeTime, int animationType)
     {
         animationTimes.Add(fadeTime);
         animationList.Add(tileAnimation);
         tileAnimationType.Add(animationType);
+        destinationList.Add(new Vector3(0,0,0));
+    }
+
+    // Add a move animation to the queue
+    public void addMoveAnimation(ITileAnimation tileAnimation, float movingTime, Vector3 pieceDestination)
+    { 
+        animationTimes.Add(movingTime);
+        animationList.Add(tileAnimation);
+        destinationList.Add(pieceDestination);
+        tileAnimationType.Add(0);
     }
 }
 
@@ -58,4 +74,5 @@ public interface ITileAnimation
 {
     void fadeIn(float fadeInTime, System.Action callback);
     void fadeOut(float fadeInTime, System.Action callback);
+    void movePiece(Vector3 destination, float moveTime, System.Action callback);
 }

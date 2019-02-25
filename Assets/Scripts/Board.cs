@@ -24,7 +24,7 @@ public class Board : MonoBehaviour
 	public int turn = 0;
 
 	public float fadeTime = 0.2f;
-	public float moveTime = 1f;
+	public float moveTime = 0.5f;
 
 	// Set 2D arrays
 	Tile[,] m_allTiles;
@@ -125,14 +125,12 @@ public class Board : MonoBehaviour
 			// fall in from top
 			gamePiece.transform.position = new Vector3 (x, y+1, 0);
 			gamePiece.transform.rotation = Quaternion.identity;
-			gamePiece.Move (x, y, moveTime);
-
+            animationQueue.addMoveAnimation(gamePiece, moveTime, new Vector3(x, y, 0));
 		} else if (newLine == 2) {
 			// fall in from right
 			gamePiece.transform.position = new Vector3 (x+1, y, 0);
 			gamePiece.transform.rotation = Quaternion.identity;
-			gamePiece.Move (x, y, moveTime);
-
+            animationQueue.addMoveAnimation(gamePiece, moveTime, new Vector3(x, y, 0));
 		} else {
 			// just place it
 			gamePiece.transform.position = new Vector3 (x, y, 0);
@@ -147,9 +145,9 @@ public class Board : MonoBehaviour
 		// Set the coordinates in the shape
 		gamePiece.SetCoord (x, y, shape);
         //TODO: WIP
-        animationQueue.addAnimation(gamePiece, fadeTime, 1);
+        animationQueue.addFadeAnimation(gamePiece, fadeTime, 1);
         //gamePiece.FadeIn(fadeTime);
-	}
+    }
 
 	bool IsWithinBounds (int x, int y)
 	{
@@ -309,18 +307,14 @@ public class Board : MonoBehaviour
 
 	public void removeRow(int row){
 
-        Debug.Log("Remove the row" + row);
+        // Debug.Log("Remove the row" + row);
 		// First delete the row and set the grid to null for this row.
-        // TODO: The grid is set to zero, but the fading is now working. The piece still stays on the board.
 		for (int x = 0; x < width; x++) {
 			// Old code, doesn't use animationQueue
             //m_allGamePieces [x, row].FadeOut (fadeTime);
 
-            animationQueue.addAnimation(m_allGamePieces[x, row], fadeTime, 2);
+            animationQueue.addFadeAnimation(m_allGamePieces[x, row], fadeTime, 2);
             m_allGamePieces[x, row] = null;
-
-            // Code for the fadein is here:
-            //animationQueue.addAnimation(gamePiece, fadeTime);
         }
 
 		// Then move the next row
@@ -329,12 +323,12 @@ public class Board : MonoBehaviour
 				for (int x = 0; x < width; x++) {
 					if (m_allGamePieces [x, y] != null) {
 						// TODO: Might be going wrong here. 
-						m_allGamePieces [x, y].Move (x, (y - 1), moveTime);
+                        animationQueue.addMoveAnimation(m_allGamePieces[x, y], moveTime, new Vector3(x, (y - 1), 0));
 
-						// The type in the movingpiece is correct
-						// Debug.Log (movingPiece.type);
+                        // The type in the movingpiece is correct
+                        // Debug.Log (movingPiece.type);
 
-						m_allGamePieces [x, (y - 1)] = m_allGamePieces[x,y];
+                        m_allGamePieces [x, (y - 1)] = m_allGamePieces[x,y];
 						m_allGamePieces [x, (y - 1)].xIndex = x; // This is probably not needed
 						m_allGamePieces [x, (y - 1)].yIndex = y-1;
 
@@ -356,7 +350,7 @@ public class Board : MonoBehaviour
 	public void removeColumn(int column){
 		// First delete the column
 		for (int y = 0; y < height; y++) {
-            animationQueue.addAnimation(m_allGamePieces[column, y], fadeTime, 2);
+            animationQueue.addFadeAnimation(m_allGamePieces[column, y], fadeTime, 2);
 			m_allGamePieces [column, y] = null;
 		}
 
@@ -365,8 +359,8 @@ public class Board : MonoBehaviour
 			for (int x = column + 1; x < width; x++) {
 				for (int y = 0; y < height; y++) {
 					if (m_allGamePieces [x, y] != null) {
-						m_allGamePieces [x, y].Move ((x - 1), y, moveTime);
-						m_allGamePieces [(x - 1), y] = m_allGamePieces [x, y];
+                        animationQueue.addMoveAnimation(m_allGamePieces[x, y], moveTime, new Vector3((x - 1), y, 0));
+                        m_allGamePieces [(x - 1), y] = m_allGamePieces [x, y];
 						m_allGamePieces = null;
 					}
 				}
@@ -429,7 +423,7 @@ public class Board : MonoBehaviour
 					
 					// Wrong shape detected, change it, then step out of the loo
 					// Fade old piece
-                    animationQueue.addAnimation(m_allGamePieces[i, y], fadeTime, 2);
+                    animationQueue.addFadeAnimation(m_allGamePieces[i, y], fadeTime, 2);
 					m_allGamePieces [i, y] = null;
 
 					GameObject newGamePiece = Instantiate (gamePiecePrefabs [shape], Vector3.zero, Quaternion.identity) as GameObject;
@@ -474,7 +468,7 @@ public class Board : MonoBehaviour
 
 					// Wrong shape detected, change it, then step out of the loop
 					// Fade old piece and set to null
-                    animationQueue.addAnimation(m_allGamePieces[i, y], fadeTime, 2);
+                    animationQueue.addFadeAnimation(m_allGamePieces[i, y], fadeTime, 2);
 					m_allGamePieces [i, y] = null;
 
 					// Now place the new piece
@@ -515,7 +509,7 @@ public class Board : MonoBehaviour
 
 					// Wrong shape detected, change it, then step out of the loop
 					// Fade old piece and set to null
-                    animationQueue.addAnimation(m_allGamePieces[x, i], fadeTime, 2);
+                    animationQueue.addFadeAnimation(m_allGamePieces[x, i], fadeTime, 2);
                     m_allGamePieces [x, i] = null;
 
 					// Now place the new piece
@@ -556,7 +550,7 @@ public class Board : MonoBehaviour
 
                         // Wrong shape detected, change it, then step out of the loop
                         // Fade old piece and set to null
-                        animationQueue.addAnimation(m_allGamePieces[x, i], fadeTime, 2);
+                        animationQueue.addFadeAnimation(m_allGamePieces[x, i], fadeTime, 2);
                         m_allGamePieces [x, i] = null;
 
 						// Now place the new piece
