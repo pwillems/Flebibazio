@@ -68,7 +68,6 @@ public class Board : MonoBehaviour
 		}
 	}
 
-	// Update is called once per frame
 	void SetupTiles ()
 	{
 
@@ -90,6 +89,7 @@ public class Board : MonoBehaviour
 
 	void SetupCamera ()
 	{
+        // Take care of automatic zooming of the camera, so it doesn't matter how big the field is
 		Camera.main.transform.position = new Vector3 ((float)(width - 1) / 2f, (float)(height - 1) / 2f, -10);
 
 		float aspectRatio = (float)Screen.width / (float)Screen.height;
@@ -103,7 +103,7 @@ public class Board : MonoBehaviour
 
 	GameObject GetRandomGamePiece ()
 	{
-		// Get random sprite
+		// Get random gamePiece
 		int randomIdx = Random.Range (0, gamePiecePrefabs.Length);
 
 		if (gamePiecePrefabs [randomIdx] == null) {
@@ -120,7 +120,7 @@ public class Board : MonoBehaviour
 			return;
 		}
 
-		// Check if the piece needs to move into the field
+		// Check if the piece needs to move into the field from outside of the board
 		if (newLine == 1) {
 			// fall in from top
 			gamePiece.transform.position = new Vector3 (x, y+1, 0);
@@ -147,7 +147,7 @@ public class Board : MonoBehaviour
 		// Set the coordinates in the shape
 		gamePiece.SetCoord (x, y, shape);
         //TODO: WIP
-        animationQueue.addAnimation(gamePiece, fadeTime);
+        animationQueue.addAnimation(gamePiece, fadeTime, 1);
         //gamePiece.FadeIn(fadeTime);
 	}
 
@@ -167,6 +167,7 @@ public class Board : MonoBehaviour
 
 	void PlaceRandomPiece(int i, int j, int newLine) 
 	{
+        // Get a random piece of which 50% is null, 50% is divided over the shapes
 		int randomNumber = Random.Range (0, 100);
 
 		if (randomNumber < 50) {
@@ -246,7 +247,7 @@ public class Board : MonoBehaviour
 
 	}
 
-	// Needs some work
+	// Needs some work to check if the field is full
 	public void isFull(){
 		int fullCount = 0;
 		for (int y = 0; y < height; y++) {
@@ -307,12 +308,20 @@ public class Board : MonoBehaviour
 	}
 
 	public void removeRow(int row){
-		
-		// First delete the row and set the grid to null for this row
+
+        Debug.Log("Remove the row" + row);
+		// First delete the row and set the grid to null for this row.
+        // TODO: The grid is set to zero, but the fading is now working. The piece still stays on the board.
 		for (int x = 0; x < width; x++) {
-			m_allGamePieces [x, row].FadeOut (fadeTime);
-			m_allGamePieces [x, row] = null;
-		}
+			// Old code, doesn't use animationQueue
+            //m_allGamePieces [x, row].FadeOut (fadeTime);
+
+            animationQueue.addAnimation(m_allGamePieces[x, row], fadeTime, 2);
+            m_allGamePieces[x, row] = null;
+
+            // Code for the fadein is here:
+            //animationQueue.addAnimation(gamePiece, fadeTime);
+        }
 
 		// Then move the next row
 		if (row != height - 1) {
@@ -337,9 +346,9 @@ public class Board : MonoBehaviour
 			}
 		}
 
-		// Now add a new row
-		for (int x = 0; x < width; x++) {
-			PlaceRandomPiece (x, height - 1, 0);
+        // Now add a new row
+        for (int x = 0; x < width; x++) {
+            PlaceRandomPiece (x, height - 1, 0);
 		}
 
 	}
@@ -347,7 +356,7 @@ public class Board : MonoBehaviour
 	public void removeColumn(int column){
 		// First delete the column
 		for (int y = 0; y < height; y++) {
-			m_allGamePieces [column, y].FadeOut (fadeTime);
+            animationQueue.addAnimation(m_allGamePieces[column, y], fadeTime, 2);
 			m_allGamePieces [column, y] = null;
 		}
 
@@ -420,8 +429,7 @@ public class Board : MonoBehaviour
 					
 					// Wrong shape detected, change it, then step out of the loo
 					// Fade old piece
-					GamePiece oldPiece = m_allGamePieces [i, y];
-					oldPiece.FadeOut (fadeTime);
+                    animationQueue.addAnimation(m_allGamePieces[i, y], fadeTime, 2);
 					m_allGamePieces [i, y] = null;
 
 					GameObject newGamePiece = Instantiate (gamePiecePrefabs [shape], Vector3.zero, Quaternion.identity) as GameObject;
@@ -466,8 +474,7 @@ public class Board : MonoBehaviour
 
 					// Wrong shape detected, change it, then step out of the loop
 					// Fade old piece and set to null
-					GamePiece oldPiece = m_allGamePieces [i, y];
-					oldPiece.FadeOut (fadeTime);
+                    animationQueue.addAnimation(m_allGamePieces[i, y], fadeTime, 2);
 					m_allGamePieces [i, y] = null;
 
 					// Now place the new piece
@@ -508,9 +515,8 @@ public class Board : MonoBehaviour
 
 					// Wrong shape detected, change it, then step out of the loop
 					// Fade old piece and set to null
-					GamePiece oldPiece = m_allGamePieces [x, i];
-					oldPiece.FadeOut (fadeTime);
-					m_allGamePieces [x, i] = null;
+                    animationQueue.addAnimation(m_allGamePieces[x, i], fadeTime, 2);
+                    m_allGamePieces [x, i] = null;
 
 					// Now place the new piece
 					GameObject newGamePiece = Instantiate (gamePiecePrefabs [shape], Vector3.zero, Quaternion.identity) as GameObject;
@@ -548,11 +554,10 @@ public class Board : MonoBehaviour
 					}
 					if (m_allGamePieces [x, i].type != shape) {
 
-						// Wrong shape detected, change it, then step out of the loop
-						// Fade old piece and set to null
-						GamePiece oldPiece = m_allGamePieces [x, i];
-						oldPiece.FadeOut (fadeTime);
-						m_allGamePieces [x, i] = null;
+                        // Wrong shape detected, change it, then step out of the loop
+                        // Fade old piece and set to null
+                        animationQueue.addAnimation(m_allGamePieces[x, i], fadeTime, 2);
+                        m_allGamePieces [x, i] = null;
 
 						// Now place the new piece
 						GameObject newGamePiece = Instantiate (gamePiecePrefabs [shape], Vector3.zero, Quaternion.identity) as GameObject;
