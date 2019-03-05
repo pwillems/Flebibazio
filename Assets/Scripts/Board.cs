@@ -312,8 +312,7 @@ public class Board : MonoBehaviour
 		for (int x = 0; x < width; x++) {
 			// Old code, doesn't use animationQueue
             //m_allGamePieces [x, row].FadeOut (fadeTime);
-
-            animationQueue.addFadeAnimation(m_allGamePieces[x, row], fadeTime, 2);
+            animationQueue.addFadeAnimationRow(m_allGamePieces[x, row], fadeTime, 3, width);
             m_allGamePieces[x, row] = null;
         }
 
