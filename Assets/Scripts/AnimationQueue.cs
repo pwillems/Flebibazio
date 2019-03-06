@@ -73,6 +73,30 @@ public class AnimationQueue : MonoBehaviour {
                     removeLists();
                 }
             }
+            // TODO: This doesn't feel like the optimal solution. 
+            else if (tileAnimationType[0] == 4)
+            {
+                rowSizeTemp = rowSize[0];
+
+                // The whole row should move
+                for (int i = 0; i < rowSizeTemp; i++)
+                {
+                    // The animation should be a fade out
+                    animationList[i].movePiece(destinationList[i], animationTimes[i], () => {
+                        // Count the total amount of fades and see if we have reached the last one by comparing it to the total row size
+                        counter++;
+                        if (counter == rowSizeTemp)
+                        {
+                            // This is the last fade, so afterwards set canRun on true
+                            canRun = true;
+                        }
+                    });
+                }
+                for (int i = 0; i < rowSizeTemp; i++)
+                {
+                    removeLists();
+                }
+            }
         }
     }
 
@@ -114,6 +138,16 @@ public class AnimationQueue : MonoBehaviour {
         animationList.Add(tileAnimation);
         tileAnimationType.Add(animationType);
         destinationList.Add(new Vector3(0, 0, 0));
+    }
+    // Add a row move animation to the queue
+    // TODO: This doesn't feel like the optimal solution. 
+    public void addMoveAnimationRow(ITileAnimation tileAnimation, float movingTime, Vector3 pieceDestination, int fieldSize)
+    {
+        animationTimes.Add(movingTime);
+        rowSize.Add(fieldSize);
+        animationList.Add(tileAnimation);
+        destinationList.Add(pieceDestination);
+        tileAnimationType.Add(4);
     }
 }
 

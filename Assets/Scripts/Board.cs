@@ -319,23 +319,34 @@ public class Board : MonoBehaviour
 		// Then move the next row
 		if (row != height - 1) {
 			for (int y = row+1; y < height; y++) {
-				for (int x = 0; x < width; x++) {
-					if (m_allGamePieces [x, y] != null) {
-						// TODO: Might be going wrong here. 
-                        animationQueue.addMoveAnimation(m_allGamePieces[x, y], moveTime, new Vector3(x, (y - 1), 0));
-
-                        // The type in the movingpiece is correct
-                        // Debug.Log (movingPiece.type);
-
-                        m_allGamePieces [x, (y - 1)] = m_allGamePieces[x,y];
-						m_allGamePieces [x, (y - 1)].xIndex = x; // This is probably not needed
-						m_allGamePieces [x, (y - 1)].yIndex = y-1;
-
-						// Set the previous one to null
-						m_allGamePieces [x, y] = null;
-
-					}
+                int tempRowCounter = 0;
+                for (int x = 0; x < width; x++) {
+                    // First count the amount of pieces per row we need to move
+                    if (m_allGamePieces[x, y] != null)
+                    {
+                        tempRowCounter++;
+                    }
 				}
+                for(int x = 0; x < width; x++)
+                {
+                    // Then actually move the moves per group (use tempRowCounter as groupsize)
+                    if (m_allGamePieces[x, y] != null)
+                    {
+                        // Try moving row by row
+                        animationQueue.addMoveAnimationRow(m_allGamePieces[x, y], moveTime, new Vector3(x, (y - 1), 0), tempRowCounter);
+
+                        // Old code for moving piece by piece
+                        // animationQueue.addMoveAnimation(m_allGamePieces[x, y], moveTime, new Vector3(x, (y - 1), 0));
+
+                        // Now update the matrix
+                        m_allGamePieces[x, (y - 1)] = m_allGamePieces[x, y];
+                        m_allGamePieces[x, (y - 1)].xIndex = x; // This is probably not needed
+                        m_allGamePieces[x, (y - 1)].yIndex = y - 1;
+
+                        // Set the previous one to null
+                        m_allGamePieces[x, y] = null;
+                    }
+                }
 			}
 		}
 
