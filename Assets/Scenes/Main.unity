@@ -489,14 +489,17 @@ MonoBehaviour:
   ruleCheckBottom: 1
   ruleCheckLeft: 1
   ruleCheckRight: 1
-  swapTime: 0.3
+  ruleCheckColumn: 1
+  ruleCheckRow: 1
+  swapTime: 1
   borderSize: 1
   gamePiecePrefabs:
   - {fileID: 1042819044255188, guid: 897bd8c83738b4b4b86b8821a7ac9978, type: 3}
   - {fileID: 1486725910355658, guid: d117dcab27f044545b865fd6dfab99d3, type: 3}
   turn: 0
   fadeTime: 0.3
-  moveTime: 1
+  moveTime: 0.5
+  fadeTimeGameStart: 0.1
 --- !u!4 &1227844363
 Transform:
   m_ObjectHideFlags: 0

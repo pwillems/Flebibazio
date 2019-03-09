@@ -131,7 +131,7 @@ public class AnimationQueue : MonoBehaviour {
     }
     // Add a row fade animation to the queue
     // TODO: This doesn't feel like the optimal solution. 
-    public void addFadeAnimationRow(ITileAnimation tileAnimation, float fadeTime, int animationType, int fieldSize)
+    public void addFadeAnimationBatch(ITileAnimation tileAnimation, float fadeTime, int animationType, int fieldSize)
     {
         animationTimes.Add(fadeTime);
         rowSize.Add(fieldSize);
@@ -141,7 +141,7 @@ public class AnimationQueue : MonoBehaviour {
     }
     // Add a row move animation to the queue
     // TODO: This doesn't feel like the optimal solution. 
-    public void addMoveAnimationRow(ITileAnimation tileAnimation, float movingTime, Vector3 pieceDestination, int fieldSize)
+    public void addMoveAnimationBatch(ITileAnimation tileAnimation, float movingTime, Vector3 pieceDestination, int fieldSize)
     {
         animationTimes.Add(movingTime);
         rowSize.Add(fieldSize);

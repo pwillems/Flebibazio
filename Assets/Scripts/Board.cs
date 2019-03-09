@@ -13,6 +13,8 @@ public class Board : MonoBehaviour
 	public bool ruleCheckBottom = true;
 	public bool ruleCheckLeft = true;
 	public bool ruleCheckRight = true;
+    public bool ruleCheckColumn = true;
+    public bool ruleCheckRow = true;
 
     private AnimationQueue animationQueue;
 
@@ -23,11 +25,12 @@ public class Board : MonoBehaviour
 
 	public int turn = 0;
 
-	public float fadeTime = 0.2f;
-	public float moveTime = 0.5f;
+	public float fadeTime = 0.5f;
+	public float moveTime = 0.3f;
+    public float fadeTimeGameStart = 0.1f;
 
-	// Set 2D arrays
-	Tile[,] m_allTiles;
+    // Set 2D arrays
+    Tile[,] m_allTiles;
 	GamePiece[,] m_allGamePieces;
 
 	Tile m_clickTile;
@@ -113,7 +116,7 @@ public class Board : MonoBehaviour
 		return gamePiecePrefabs [randomIdx];
 	}
 
-	public void PlaceGamePiece (GamePiece gamePiece, int x, int y, int shape, int newLine)
+	public void PlaceGamePiece (GamePiece gamePiece, int x, int y, int shape, int newLine, float timeToFade)
 	{
 		if (gamePiece == null) {
 			Debug.LogWarning ("Invalid GamePiece");
@@ -145,7 +148,7 @@ public class Board : MonoBehaviour
 		// Set the coordinates in the shape
 		gamePiece.SetCoord (x, y, shape);
         //TODO: WIP
-        animationQueue.addFadeAnimation(gamePiece, fadeTime, 1);
+        animationQueue.addFadeAnimation(gamePiece, timeToFade, 1);
         //gamePiece.FadeIn(fadeTime);
     }
 
@@ -158,12 +161,12 @@ public class Board : MonoBehaviour
 	{
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				PlaceRandomPiece (i, j, 0);
+				PlaceRandomPiece (i, j, 0, fadeTimeGameStart);
 			}
 		}
 	}
 
-	void PlaceRandomPiece(int i, int j, int newLine) 
+	void PlaceRandomPiece(int i, int j, int newLine, float timeToFade) 
 	{
         // Get a random piece of which 50% is null, 50% is divided over the shapes
 		int randomNumber = Random.Range (0, 100);
@@ -188,7 +191,7 @@ public class Board : MonoBehaviour
 
 			if (randomPiece != null) {
 				randomPiece.GetComponent<GamePiece> ().Init (this);
-				PlaceGamePiece (randomPiece.GetComponent<GamePiece> (), i, j, counter, newLine);
+				PlaceGamePiece (randomPiece.GetComponent<GamePiece> (), i, j, counter, newLine, timeToFade);
 				randomPiece.transform.parent = transform;
 			}
 		}
@@ -212,7 +215,7 @@ public class Board : MonoBehaviour
 
 					if (newGamePiece != null) {
 						newGamePiece.GetComponent<GamePiece> ().Init (this);
-						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, y, 1, 0);
+						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, y, 1, 0, fadeTime);
 						newGamePiece.transform.parent = transform;
 					}
 
@@ -227,7 +230,7 @@ public class Board : MonoBehaviour
 
 					if (newGamePiece != null) {
 						newGamePiece.GetComponent<GamePiece> ().Init (this);
-						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, y, 0, 0);
+						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, y, 0, 0, fadeTime);
 						newGamePiece.transform.parent = transform;
 					}
 
@@ -286,6 +289,7 @@ public class Board : MonoBehaviour
 
 	public void checkFullColumn() {
 		for (int x = 0; x < width; x++) {
+
 			int startShape = 325;
 
 			if (m_allGamePieces [x, 0] != null) {
@@ -295,7 +299,7 @@ public class Board : MonoBehaviour
 			for (int y = 1; y < height; y++) {
 				if (m_allGamePieces [x, y] != null && m_allGamePieces [x, y].type == startShape) {
 					// So at least shape 2 is the same as the startshape
-					if (y == (height - 1)) {
+					if (y == (height-1)) {
 						// We got a winner folks! 
 						Debug.Log("Full column " + x);
 						removeColumn (x);
@@ -306,13 +310,11 @@ public class Board : MonoBehaviour
 	}
 
 	public void removeRow(int row){
-
-        // Debug.Log("Remove the row" + row);
 		// First delete the row and set the grid to null for this row.
 		for (int x = 0; x < width; x++) {
 			// Old code, doesn't use animationQueue
             //m_allGamePieces [x, row].FadeOut (fadeTime);
-            animationQueue.addFadeAnimationRow(m_allGamePieces[x, row], fadeTime, 3, width);
+            animationQueue.addFadeAnimationBatch(m_allGamePieces[x, row], fadeTime, 3, width);
             m_allGamePieces[x, row] = null;
         }
 
@@ -333,7 +335,7 @@ public class Board : MonoBehaviour
                     if (m_allGamePieces[x, y] != null)
                     {
                         // Try moving row by row
-                        animationQueue.addMoveAnimationRow(m_allGamePieces[x, y], moveTime, new Vector3(x, (y - 1), 0), tempRowCounter);
+                        animationQueue.addMoveAnimationBatch(m_allGamePieces[x, y], moveTime, new Vector3(x, (y - 1), 0), tempRowCounter);
 
                         // Old code for moving piece by piece
                         // animationQueue.addMoveAnimation(m_allGamePieces[x, y], moveTime, new Vector3(x, (y - 1), 0));
@@ -352,26 +354,45 @@ public class Board : MonoBehaviour
 
         // Now add a new row
         for (int x = 0; x < width; x++) {
-            PlaceRandomPiece (x, height - 1, 0);
+            PlaceRandomPiece (x, height - 1, 0, fadeTime);
 		}
 
 	}
 
 	public void removeColumn(int column){
+
+        Debug.Log("Remove Column " + column);
+
 		// First delete the column
 		for (int y = 0; y < height; y++) {
-            animationQueue.addFadeAnimation(m_allGamePieces[column, y], fadeTime, 2);
+            animationQueue.addFadeAnimationBatch(m_allGamePieces[column, y], fadeTime, 3, height);
 			m_allGamePieces [column, y] = null;
 		}
 
 		// Now move the rest
 		if (column != width - 1) {
 			for (int x = column + 1; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					if (m_allGamePieces [x, y] != null) {
-                        animationQueue.addMoveAnimation(m_allGamePieces[x, y], moveTime, new Vector3((x - 1), y, 0));
-                        m_allGamePieces [(x - 1), y] = m_allGamePieces [x, y];
-						m_allGamePieces = null;
+                int tempRowCounter = 0;
+                for (int y = 0; y < height; y++)
+                {
+                    tempRowCounter++;
+                }
+                for (int y = 0; y < height; y++) {
+					if (m_allGamePieces [x, y] != null)
+                    {
+                        // Try moving columnm by column
+                        animationQueue.addMoveAnimationBatch(m_allGamePieces[x, y], moveTime, new Vector3(x, (y - 1), 0), tempRowCounter);
+
+                        // Old code for moving piece by piece
+                        // animationQueue.addMoveAnimation(m_allGamePieces[x, y], moveTime, new Vector3((x - 1), y, 0));
+
+                        // Now update the matrix
+                        m_allGamePieces[(x - 1), y] = m_allGamePieces [x, y];
+                        m_allGamePieces[(x - 1), y].xIndex = x;
+                        m_allGamePieces[(x - 1), y].yIndex = y;
+
+                        // Set the previous one to null
+                        m_allGamePieces = null;
 					}
 				}
 			}
@@ -379,7 +400,7 @@ public class Board : MonoBehaviour
 
 		// Now add a new column
 		for (int y = 0; y < height; y++) {
-			PlaceRandomPiece (width-1, y, 1);
+			PlaceRandomPiece (width-1, y, 1, fadeTime);
 		}
 	}
 
@@ -401,7 +422,14 @@ public class Board : MonoBehaviour
 			checkBottom (x, y, shape);
 		}
 
-		checkFullRow ();
+        if (ruleCheckColumn)
+        {
+            checkFullColumn();
+        }
+        if (ruleCheckRow)
+        {
+            checkFullRow();
+        }
 	}
 
 	void checkRight (int x, int y, int shape)
@@ -419,7 +447,7 @@ public class Board : MonoBehaviour
 
 					if (newGamePiece != null) {
 						newGamePiece.GetComponent<GamePiece> ().Init (this);
-						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), i, y, shape, 0);
+						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), i, y, shape, 0, fadeTime);
 						newGamePiece.transform.parent = transform;
 					}
 
@@ -440,7 +468,7 @@ public class Board : MonoBehaviour
 
 					if (newGamePiece != null) {
 						newGamePiece.GetComponent<GamePiece> ().Init (this);
-						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), i, y, shape, 0);
+						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), i, y, shape, 0, fadeTime);
 						newGamePiece.transform.parent = transform;
 					}
 
@@ -466,7 +494,7 @@ public class Board : MonoBehaviour
 					if (newGamePiece != null) {
 						//Debug.Log("New piece " + i + " " + y + " " + shape);
 						newGamePiece.GetComponent<GamePiece> ().Init (this);
-						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), i, y, shape, 0);
+						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), i, y, shape, 0, fadeTime);
 						newGamePiece.transform.parent = transform;
 					}
 
@@ -486,7 +514,7 @@ public class Board : MonoBehaviour
 
 					if (newGamePiece != null) {
 						newGamePiece.GetComponent<GamePiece> ().Init (this);
-						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), i, y, shape, 0);
+						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), i, y, shape, 0, fadeTime);
 						newGamePiece.transform.parent = transform;
 					}
 
@@ -508,7 +536,7 @@ public class Board : MonoBehaviour
 					if (newGamePiece != null) {
 						//Debug.Log("New piece " + i + " " + y + " " + shape);
 						newGamePiece.GetComponent<GamePiece> ().Init (this);
-						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, i, shape, 0);
+						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, i, shape, 0, fadeTime);
 						newGamePiece.transform.parent = transform;
 					}
 				}
@@ -527,7 +555,7 @@ public class Board : MonoBehaviour
 
 					if (newGamePiece != null) {
 						newGamePiece.GetComponent<GamePiece> ().Init (this);
-						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, i, shape, 0);
+						PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, i, shape, 0, fadeTime);
 						newGamePiece.transform.parent = transform;
 					}
 
@@ -549,7 +577,7 @@ public class Board : MonoBehaviour
 						if (newGamePiece != null) {
 							//Debug.Log("New piece " + i + " " + y + " " + shape);
 							newGamePiece.GetComponent<GamePiece> ().Init (this);
-							PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, i, shape, 0);
+							PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, i, shape, 0, fadeTime);
 							newGamePiece.transform.parent = transform;
 						}
 					}
@@ -568,7 +596,7 @@ public class Board : MonoBehaviour
 
 						if (newGamePiece != null) {
 							newGamePiece.GetComponent<GamePiece> ().Init (this);
-							PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, i, shape, 0);
+							PlaceGamePiece (newGamePiece.GetComponent<GamePiece> (), x, i, shape, 0, fadeTime);
 							newGamePiece.transform.parent = transform;
 						}
 
