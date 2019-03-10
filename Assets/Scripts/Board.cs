@@ -303,7 +303,10 @@ public class Board : MonoBehaviour
 						// We got a winner folks! 
 						Debug.Log("Full column " + x);
 						removeColumn (x);
+						break;
 					}
+				} else {
+					break;
 				}
 			}
 		}
@@ -373,15 +376,20 @@ public class Board : MonoBehaviour
 		if (column != width - 1) {
 			for (int x = column + 1; x < width; x++) {
                 int tempRowCounter = 0;
-                for (int y = 0; y < height; y++)
+				for (int y = 0; y < height; y++)
                 {
-                    tempRowCounter++;
+					if (m_allGamePieces[x, y] != null)
+					{
+						tempRowCounter++;
+					}
                 }
-                for (int y = 0; y < height; y++) {
+				for (int y = 0; y < height; y++) {
+					Debug.Log ("All game pieces x, y = " + x + ", " + y);
 					if (m_allGamePieces [x, y] != null)
                     {
                         // Try moving columnm by column
-                        animationQueue.addMoveAnimationBatch(m_allGamePieces[x, y], moveTime, new Vector3(x, (y - 1), 0), tempRowCounter);
+						Debug.Log("Old pos = " + x + ", " + y + "  -   New pos = " + (x-1) + ", " + y);
+						animationQueue.addMoveAnimationBatch(m_allGamePieces[x, y], moveTime, new Vector3((x - 1), y, 0), tempRowCounter);
 
                         // Old code for moving piece by piece
                         // animationQueue.addMoveAnimation(m_allGamePieces[x, y], moveTime, new Vector3((x - 1), y, 0));
@@ -392,7 +400,7 @@ public class Board : MonoBehaviour
                         m_allGamePieces[(x - 1), y].yIndex = y;
 
                         // Set the previous one to null
-                        m_allGamePieces = null;
+						m_allGamePieces[x, y] = null;
 					}
 				}
 			}
@@ -606,50 +614,4 @@ public class Board : MonoBehaviour
 				}
 			}
 	}
-
-	/* 
-	 * --Old code--
-	 * 
-
-	public void DragToTile (Tile tile)
-	{
-        if (m_clickTile != null)
-        {
-            m_targetTile = tile;
-        }
-	}
-
-	public void ReleaseTile ()
-	{
-        if(m_clickTile != null && m_targetTile != null)
-        {
-            SwitchTile(m_clickTile, m_targetTile);
-        }
-
-        m_clickTile = null;
-        m_targetTile = null;
-	}
-
-	public void SwitchTile (Tile clickedTile, Tile targetTile)
-	{
-        GamePiece clickedPiece = m_allGamePieces[clickedTile.xIndex, clickedTile.yIndex];
-        GamePiece targetPiece = m_allGamePieces[targetTile.xIndex, targetTile.yIndex];
-
-        clickedPiece.Move(targetTile.xIndex, targetTile.yIndex, swapTime);
-        targetPiece.Move(clickedPiece.xIndex, clickedPiece.yIndex, swapTime);
-	}
-
-	bool IsNextTo (Tile start, Tile end)
-	{
-		if (Mathf.Abs (start.xIndex - end.xIndex) == 1 && start.yIndex == end.yIndex) {
-			return true;
-		}
-		if (Mathf.Abs (start.yIndex = end.yIndex) == 1 && start.xIndex == end.xIndex) {
-			return true;
-		}
-		return false;
-	}
-	
-	*/
-
 }
