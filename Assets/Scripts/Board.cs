@@ -8,7 +8,8 @@ public class Board : MonoBehaviour
 	public int width;
 	public int height;
 	public GameObject tilePrefab;
-	public int difficulty;
+
+    public int difficulty;
 	public bool ruleCheckTop = true;
 	public bool ruleCheckBottom = true;
 	public bool ruleCheckLeft = true;
@@ -16,7 +17,12 @@ public class Board : MonoBehaviour
     public bool ruleCheckColumn = true;
     public bool ruleCheckRow = true;
 
+    public int turnIncrease = 1;
+    public int rowIncrease = 5;
+
     private AnimationQueue animationQueue;
+
+    private GameObject score;
 
 	public float swapTime = 0.5f;
 
@@ -43,6 +49,7 @@ public class Board : MonoBehaviour
 	void Start ()
 	{
         animationQueue = GetComponent<AnimationQueue>();
+        score = GameObject.Find("ScoreManager");
 		m_allTiles = new Tile[width, height];
 		m_allGamePieces = new GamePiece[width, height];
 		SetupTiles ();
@@ -239,6 +246,10 @@ public class Board : MonoBehaviour
 				}
 			}
 
+            // Update the score
+            ScoreManager scoreManager = (ScoreManager)score.GetComponent(typeof(ScoreManager));
+            scoreManager.AddScore(turnIncrease);
+
 			// Now check if the playingfield is full
 			isFull();
 
@@ -258,6 +269,7 @@ public class Board : MonoBehaviour
 		}
 		if (fullCount == height * width) {
 			//Debug.Log ("Game over, playing field full!");
+            // TODO, add score to scoreboard and return to menu
 		}
 	}
 
@@ -360,7 +372,12 @@ public class Board : MonoBehaviour
             PlaceRandomPiece (x, height - 1, 0, fadeTime);
 		}
 
-	}
+        // Now increase the score
+        // Update the score
+        ScoreManager scoreManager = (ScoreManager)score.GetComponent(typeof(ScoreManager));
+        scoreManager.AddScore(rowIncrease);
+
+    }
 
 	public void removeColumn(int column){
 
@@ -410,7 +427,12 @@ public class Board : MonoBehaviour
 		for (int y = 0; y < height; y++) {
 			PlaceRandomPiece (width-1, y, 1, fadeTime);
 		}
-	}
+
+        // Now increase the score
+        // Update the score
+        ScoreManager scoreManager = (ScoreManager)score.GetComponent(typeof(ScoreManager));
+        scoreManager.AddScore(rowIncrease);
+    }
 
 	public void checkSides (int x, int y, int shape)
 	{
