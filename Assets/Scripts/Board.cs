@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Board : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class Board : MonoBehaviour
     public int turnIncrease = 1;
     public int rowIncrease = 5;
 
+    public int level = 0;
+
     private AnimationQueue animationQueue;
 
     private GameObject score;
@@ -29,7 +32,13 @@ public class Board : MonoBehaviour
 	public int borderSize;
 	public GameObject[] gamePiecePrefabs;
 
-	public int turn = 0;
+    public GameObject nextShape;
+
+    public TextAsset[] levelsCSV;
+    private char lineSeperater = '\n'; // It defines line seperate character
+    private char fieldSeperator = ','; // It defines field seperate chracter
+
+    public int turn = 0;
 
 	public float fadeTime = 0.5f;
 	public float moveTime = 0.3f;
@@ -38,6 +47,8 @@ public class Board : MonoBehaviour
     // Set 2D arrays
     Tile[,] m_allTiles;
 	GamePiece[,] m_allGamePieces;
+
+    int[,] m_levelBuilder;
 
 	Tile m_clickTile;
 	Tile m_targetTile;
@@ -52,10 +63,25 @@ public class Board : MonoBehaviour
         score = GameObject.Find("ScoreManager");
 		m_allTiles = new Tile[width, height];
 		m_allGamePieces = new GamePiece[width, height];
-		SetupTiles ();
+        m_levelBuilder = new int[width, height];
+        SetupTiles ();
 		SetupCamera ();
-		FillRandom ();
-	}
+
+        if (level == 0)
+        {
+            FillRandom();
+        }
+        if (level == 1)
+        {
+            // Load in level from CSV file
+            LoadLevel(levelsCSV[0]);
+        }
+
+        // Setup next play piece
+        Color tempColor = gamePiecePrefabs[1].GetComponent<SpriteRenderer>().color;
+        nextShape.GetComponent<Image>().color = new Color(tempColor.r, tempColor.g, tempColor.b, 1);
+
+    }
 
 	// Debugging purposes:
 	void Update () {
@@ -77,6 +103,38 @@ public class Board : MonoBehaviour
 
 		}
 	}
+
+    void LoadLevel(TextAsset levelData)
+    {
+        // Read CSV data and fill levelBuilder with the grid
+        string[] records = levelData.text.Split(lineSeperater);
+        for (int i = 0; i < records.Length; i++)
+        {
+            string[] fields = records[i].Split(fieldSeperator);
+            for (int j = 0; j < fields.Length; j++)
+            {
+                m_levelBuilder[i, j] = int.Parse(fields[j]);
+            }
+        }
+
+        // Start the level
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                if (m_levelBuilder[i, j] == 1 || m_levelBuilder[i, j] == 2)
+                {
+                    GameObject newGamePiece = Instantiate(gamePiecePrefabs[m_levelBuilder[i, j] - 1], Vector3.zero, Quaternion.identity) as GameObject;
+                    if (newGamePiece != null)
+                    {
+                        newGamePiece.GetComponent<GamePiece>().Init(this);
+                        PlaceGamePiece(newGamePiece.GetComponent<GamePiece>(), i, j, 1, 0, fadeTime);
+                        newGamePiece.transform.parent = transform;
+                    }
+                }
+            }
+        }
+    }
 
 	void SetupTiles ()
 	{
@@ -109,7 +167,26 @@ public class Board : MonoBehaviour
 
 		Camera.main.orthographicSize = (verticalSize > horizontalSize) ? verticalSize : horizontalSize;
 	}
+    
+    void NextTurn()
+    {
+        // Quickly done, needs some updating if we are using more shapes
+        if(turn == 0)
+        {
+            // Setup next play piece
+            Color tempColor = gamePiecePrefabs[0].GetComponent<SpriteRenderer>().color;
+            nextShape.GetComponent<Image>().color = new Color(tempColor.r, tempColor.g, tempColor.b, 1);
+            turn = 1;
+        }
 
+        else if (turn == 1)
+        {
+            // Setup next play piece
+            Color tempColor = gamePiecePrefabs[1].GetComponent<SpriteRenderer>().color;
+            nextShape.GetComponent<Image>().color = new Color(tempColor.r, tempColor.g, tempColor.b, 1);
+            turn = 0;
+        }
+    }
 
 	GameObject GetRandomGamePiece ()
 	{
@@ -253,8 +330,8 @@ public class Board : MonoBehaviour
 			// Now check if the playingfield is full
 			isFull();
 
-			// Next turn :) 
-			turn++;
+            // Next turn :) 
+            NextTurn();
 		}
 
 	}

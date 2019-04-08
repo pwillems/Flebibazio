@@ -11,6 +11,11 @@ public class MenuController : MonoBehaviour
     public bool isHighscores;
     public bool isQuit;
 
+    public void GotoLevelOne()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Level 1");
+    }
+
     public void GotoEndless()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("Infinite");
