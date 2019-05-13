@@ -8,11 +8,13 @@ public class Tile : MonoBehaviour {
     public int yIndex;
 
     Board m_board;
+    TutorialController m_tutorial;
+    public bool tutorial = false;
 
 
 	// Use this for initialization
 	void Start () {
-		
+        tutorial = m_board.tutorial;
 	}
 
 
@@ -25,9 +27,16 @@ public class Tile : MonoBehaviour {
 
     void OnMouseUp()
     {
-        if (m_board != null)
+        if (!tutorial)
         {
-            m_board.ClickTile(this);
+            if (m_board != null)
+            {
+                m_board.ClickTile(this);
+            }
+        }
+        else
+        {
+            m_tutorial.NextStep();
         }
     }
 

@@ -34,9 +34,11 @@ public class Board : MonoBehaviour
 
     public GameObject nextShape;
 
+    // CSV Array containing all the levels + Boolean to check if we are in the tutorial
     public TextAsset[] levelsCSV;
     private char lineSeperater = '\n'; // It defines line seperate character
     private char fieldSeperator = ','; // It defines field seperate chracter
+    public bool tutorial = false;
 
     public int turn = 0;
 
@@ -67,20 +69,28 @@ public class Board : MonoBehaviour
         SetupTiles ();
 		SetupCamera ();
 
-        if (level == 0)
+        if (tutorial)
         {
-            FillRandom();
+            // Tutorial time, let's do this! 
         }
-        if (level == 1)
+        else
         {
-            // Load in level from CSV file
-            LoadLevel(levelsCSV[0]);
+            // Not Tutorial time, let's start a level! 
+            if (level == 0)
+            {
+                // Endless mode! 
+                FillRandom();
+            }
+            if (level == 1)
+            {
+                // Load in level from CSV file
+                LoadLevel(levelsCSV[0]);
+            }
         }
 
         // Setup next play piece
         Color tempColor = gamePiecePrefabs[1].GetComponent<SpriteRenderer>().color;
         nextShape.GetComponent<Image>().color = new Color(tempColor.r, tempColor.g, tempColor.b, 1);
-
     }
 
 	// Debugging purposes:
