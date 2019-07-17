@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1566180534817289040
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1566180534817289047}
+  - component: {fileID: 1566180534817289046}
+  m_Layer: 0
+  m_Name: TutorialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1566180534817289047
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1566180534817289040}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1566180534817289046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1566180534817289040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6db88f7e8614a2f42a89911ef6c2d7ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTextHolder: {fileID: 0}
+  opener: Welcome to testing Pim's Shape Game, Click to continue.
+  steps:
+  - Placing a shape next to a shape of the same colour will start filling up the row.
+    Try it out by placing a new shape at the white postion.
+  - This can be in both the horizontal and vertical direction
+  - Or all four directions at the same time
+  - When while filling the line it encounters a different shape, it will replace it
+    and stop filling the line.
+  - When while filling the line it encounters a different shape, it will replace it
+    and stop filling the line.
+  - This also can happen to every of the four sides (or all at the same time)
+  - When you complete a column with the same shape it will be removed and a new column
+    will be placed
+  - 'This also works for rows :) '
+  - You could even do multiple columns and rows at the same time!
+  stepCounter: 0

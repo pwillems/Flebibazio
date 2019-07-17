@@ -21,6 +21,7 @@ public class TutorialController : MonoBehaviour
 
     public void NextStep()
     {
+        Debug.Log("NExt step");
         // Show the next explanation, then move a step up
         tutorialTextHolder.text = steps[stepCounter];
         stepCounter++;

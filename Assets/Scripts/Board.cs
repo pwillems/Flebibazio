@@ -5,11 +5,30 @@ using UnityEngine.UI;
 
 public class Board : MonoBehaviour
 {
-
+    // Level settings
 	public int width;
 	public int height;
-	public GameObject tilePrefab;
+    public int turnIncrease = 1;
+    public int rowIncrease = 5;
+    public int level = 0;
+    public float swapTime = 0.5f;
+    public int borderSize;
+    public int turn = 0;
+    public float fadeTime = 0.5f;
+    public float moveTime = 0.3f;
+    public float fadeTimeGameStart = 0.1f;
 
+    // Set 2D arrays
+    Tile[,] m_allTiles;
+    GamePiece[,] m_allGamePieces;
+    int[,] m_levelBuilder;
+    Tile m_clickTile;
+    Tile m_targetTile;
+
+    // Use stepnumer to chain animations, each one can be delayed 0.3s*m_stepnumber
+    int m_stepNumber;
+
+    // Set rules
     public int difficulty;
 	public bool ruleCheckTop = true;
 	public bool ruleCheckBottom = true;
@@ -18,45 +37,19 @@ public class Board : MonoBehaviour
     public bool ruleCheckColumn = true;
     public bool ruleCheckRow = true;
 
-    public int turnIncrease = 1;
-    public int rowIncrease = 5;
-
-    public int level = 0;
-
+    // Refered scripts
     private AnimationQueue animationQueue;
-
+    public GameObject tilePrefab;
     private GameObject score;
-
-	public float swapTime = 0.5f;
-
-	public int borderSize;
-	public GameObject[] gamePiecePrefabs;
-
+    public GameObject[] gamePiecePrefabs;
     public GameObject nextShape;
+    public GameManager gameManager;
 
     // CSV Array containing all the levels + Boolean to check if we are in the tutorial
     public TextAsset[] levelsCSV;
     private char lineSeperater = '\n'; // It defines line seperate character
     private char fieldSeperator = ','; // It defines field seperate chracter
     public bool tutorial = false;
-
-    public int turn = 0;
-
-	public float fadeTime = 0.5f;
-	public float moveTime = 0.3f;
-    public float fadeTimeGameStart = 0.1f;
-
-    // Set 2D arrays
-    Tile[,] m_allTiles;
-	GamePiece[,] m_allGamePieces;
-
-    int[,] m_levelBuilder;
-
-	Tile m_clickTile;
-	Tile m_targetTile;
-
-	// Use stepnumer to chain animations, each one can be delayed 0.3s*m_stepnumber
-	int m_stepNumber;
     
 	// Use this for initialization
 	void Start ()
@@ -66,9 +59,12 @@ public class Board : MonoBehaviour
 		m_allTiles = new Tile[width, height];
 		m_allGamePieces = new GamePiece[width, height];
         m_levelBuilder = new int[width, height];
-        SetupTiles ();
-		SetupCamera ();
+        SetupTiles();
+        SetupCamera();
+    }
 
+    public void SetupBoard()
+    {
         if (tutorial)
         {
             // Tutorial time, let's do this! 
@@ -93,7 +89,7 @@ public class Board : MonoBehaviour
         nextShape.GetComponent<Image>().color = new Color(tempColor.r, tempColor.g, tempColor.b, 1);
     }
 
-	// Debugging purposes:
+	/* Debugging purposes:
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
@@ -112,11 +108,11 @@ public class Board : MonoBehaviour
 			}
 
 		}
-	}
+	}*/
 
     void LoadLevel(TextAsset levelData)
     {
-        // Read CSV data and fill levelBuilder with the grid
+        // Read CSV data and fill levelBuilder 2d array with the grid
         string[] records = levelData.text.Split(lineSeperater);
         for (int i = 0; i < records.Length; i++)
         {
@@ -127,7 +123,7 @@ public class Board : MonoBehaviour
             }
         }
 
-        // Start the level
+        // Now build the level and set the 2d arrays used
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
@@ -146,9 +142,9 @@ public class Board : MonoBehaviour
         }
     }
 
+    // 
 	void SetupTiles ()
 	{
-
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				GameObject tile = Instantiate (tilePrefab, new Vector3 (i, j, 0), Quaternion.identity) as GameObject;
@@ -162,7 +158,6 @@ public class Board : MonoBehaviour
 				m_allTiles [i, j].Init (i, j, this);
 			}
 		}
-		
 	}
 
 	void SetupCamera ()
@@ -195,6 +190,11 @@ public class Board : MonoBehaviour
             Color tempColor = gamePiecePrefabs[1].GetComponent<SpriteRenderer>().color;
             nextShape.GetComponent<Image>().color = new Color(tempColor.r, tempColor.g, tempColor.b, 1);
             turn = 0;
+        }
+
+        if(gameManager != null)
+        {
+            gameManager.UpdateMoves();
         }
     }
 
