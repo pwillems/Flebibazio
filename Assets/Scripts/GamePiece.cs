@@ -10,12 +10,16 @@ public class GamePiece : MonoBehaviour, ITileAnimation
     public int yIndex;
     public int type;
 
+    private GameObject sounds;
+
     bool m_isMoving = false;
     bool m_isFading = false;
 
     Board m_board;
 
     public InterpType interpolation = InterpType.SmootherStep;
+
+    public AudioClip placementSound;
 
     public enum InterpType
     {
@@ -29,7 +33,7 @@ public class GamePiece : MonoBehaviour, ITileAnimation
     // Use this for initialization
     void Start()
     {
-
+        sounds = GameObject.Find("SoundManager");
     }
 
     // Update is called once per frame
@@ -71,6 +75,11 @@ public class GamePiece : MonoBehaviour, ITileAnimation
         {
             StartCoroutine(FadeInRoutineTest(timeToFade));
             // Debug.Log("Start fading in position " + xIndex + ", " + yIndex);
+            if(sounds != null)
+            {
+                SoundManager soundManager = (SoundManager)sounds.GetComponent(typeof(SoundManager));
+                soundManager.PlayClipAtPoint(placementSound, Vector3.zero, soundManager.fxVolume);
+            }
         }
     }
 

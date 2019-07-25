@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1486725910355658, guid: d117dcab27f044545b865fd6dfab99d3, type: 3}
       propertyPath: m_Name
-      value: WhiteDot
+      value: WhiteDot Variant
       objectReference: {fileID: 0}
     - target: {fileID: 4479970628720084, guid: d117dcab27f044545b865fd6dfab99d3, type: 3}
       propertyPath: m_LocalPosition.x
