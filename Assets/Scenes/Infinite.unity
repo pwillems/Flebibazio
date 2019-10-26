@@ -1123,7 +1123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95fead91fb588844797b96962f95bbcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movesLeft: 100
+  movesLeft: 100000
   scoreGoal: 10000
   screenFader: {fileID: 1693515284}
   levelNameText: {fileID: 40691982}
@@ -1697,7 +1697,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Score goal
 
-    30000'
+    10000'
 --- !u!222 &1993504577
 CanvasRenderer:
   m_ObjectHideFlags: 0
